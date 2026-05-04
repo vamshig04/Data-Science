@@ -1,0 +1,42 @@
+class Solution {
+    public TreeNode replaceValueInTree(TreeNode root) {
+        if (root == null) return null;
+
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(root);
+        root.val = 0; // root has no cousins
+
+        while (!q.isEmpty()) {
+            int size = q.size();
+            int levelSum = 0;
+            TreeNode[] nodes = new TreeNode[size];
+
+            // First pass: collect nodes and compute sum of children
+            for (int i = 0; i < size; i++) {
+                TreeNode node = q.poll();
+                nodes[i] = node;
+                if (node.left != null) levelSum += node.left.val;
+                if (node.right != null) levelSum += node.right.val;
+            }
+
+            // Second pass: update children values
+            for (int i = 0; i < size; i++) {
+                TreeNode node = nodes[i];
+                int siblingSum = 0;
+                if (node.left != null) siblingSum += node.left.val;
+                if (node.right != null) siblingSum += node.right.val;
+
+                if (node.left != null) {
+                    node.left.val = levelSum - siblingSum;
+                    q.add(node.left);
+                }
+                if (node.right != null) {
+                    node.right.val = levelSum - siblingSum;
+                    q.add(node.right);
+                }
+            }
+        }
+
+        return root;
+    }
+}
